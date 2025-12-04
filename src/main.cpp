@@ -85,14 +85,7 @@ void AddPersonagem(Lista *lista, int *proximoID)
         cout << "Nivel invalido! Insira um valor entre 1 e 20: ";
         cin >> p.nivel;
     }
-
-    cout << "Tipo de dado para iniciativa: ";
-    cin >> p.dadoBase;
-    while (p.dadoBase < 4)
-    {
-        cout << "Tipo de dado invalido! Insira um valor igual ou maior que 4: ";
-        cin >> p.dadoBase;
-    }
+    p.dadoBase = Dado_Final;
 
     char tipo;
     cout << "Tipo (P = Player, N = NPC): ";
@@ -339,6 +332,7 @@ int main()
             break;
 
         case 2:
+            LimparInputBuffer();
             AddPersonagem(&lista, &proximoID);
             Pausar();
             break;
@@ -355,6 +349,19 @@ int main()
 
         case 5:
             rolarIniciativaTodos(&lista);
+
+            cout << "\n===== Rolagem de Iniciativa =====\n";
+            {
+                No *it = lista.getInicio();
+                while (it != nullptr)
+                {
+                    cout << it->dados.nome << ": " << it->dados.iniciativaAtual
+                         << " (d" << Dado_Final << " + nivel " << it->dados.nivel << ")\n";
+                    it = it->proximo;
+                }
+            }
+            cout << "=================================\n";
+
             cout << "Iniciativa rolada para todos os personagens." << endl;
             Pausar();
             break;
@@ -362,12 +369,32 @@ int main()
         case 6:
             cout << "Ordenar lista (QuickSort) selecionado." << endl;
             Metodo_Ordenacao = "QuickSort";
+
+            cout << "\nLista atual (antes da ordenacao):\n";
+            {
+                No *it = lista.getInicio();
+                while (it != nullptr)
+                {
+                    cout << it->dados.nome << " - iniciativa: " << it->dados.iniciativaAtual << endl;
+                    it = it->proximo;
+                }
+            }
             Pausar();
             break;
 
         case 7:
             cout << "Ordenar lista (MergeSort) selecionado." << endl;
             Metodo_Ordenacao = "MergeSort";
+
+            cout << "\nLista atual (antes da ordenacao):\n";
+            {
+                No *it = lista.getInicio();
+                while (it != nullptr)
+                {
+                    cout << it->dados.nome << " - iniciativa: " << it->dados.iniciativaAtual << endl;
+                    it = it->proximo;
+                }
+            }
             Pausar();
             break;
 
