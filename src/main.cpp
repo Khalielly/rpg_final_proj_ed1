@@ -184,19 +184,24 @@ No *merge(No *primeiro, No *segundo)
     if (!segundo)
         return primeiro;
 
+    No *resultado = nullptr;
+    
     if (primeiro->dados.iniciativaAtual >= segundo->dados.iniciativaAtual)
     {
-        primeiro->proximo = merge(primeiro->proximo, segundo);
-        if (primeiro->proximo)
-            primeiro->proximo->anterior = primeiro;
-        primeiro->anterior = nullptr;
+        resultado = primeiro;
+        resultado->proximo = merge(primeiro->proximo, segundo);
+
+        if (resultado->proximo)
+            resultado->proximo->anterior = resultado;
+        resultado->anterior = nullptr;
         return primeiro;
     }
     else
     {
-        segundo->proximo = merge(primeiro, segundo->proximo);
-        if (segundo->proximo)
-            segundo->proximo->anterior = segundo;
+        resultado = segundo;
+        resultado->proximo = merge(primeiro, segundo->proximo);
+        if (resultado->proximo)
+            resultado->proximo->anterior = resultado;
         segundo->anterior = nullptr;
         return segundo;
     }
