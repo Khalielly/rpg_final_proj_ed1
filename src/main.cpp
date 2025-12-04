@@ -79,12 +79,13 @@ void AddPersonagem(Lista *lista, int *proximoID)
         return;
     }
 
+    int nivelInput;
     cout << "Nivel (1-20): ";
-    cin >> p.nivel;
+    cin >> nivelInput;
 
-    p.nivel = validarNivel(p.nivel);
+    p.nivel = validarNivel(nivelInput);
 
-    if (p.nivel != p.nivel)
+    if (nivelInput != p.nivel)
     {
         cout << "Nivel ajustado para: " << p.nivel << endl;
     }
@@ -265,7 +266,7 @@ void IniciarCombate(Lista *lista, int *proximoID)
             cout << "\n--- Proximo Turno ---" << endl;
             {
                 No *primeiro = lista->getInicio();
-                if (primeiro == nullptr) {
+                if (primeiro != nullptr) {
                     Personagem p = primeiro->dados;
                     lista->remover(p.id);
                     lista->inFim(p);
