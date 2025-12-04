@@ -142,16 +142,15 @@ void Lista::exibir() {
     
     cout << endl;
     cout << "+-------------------------------------------------+" << endl;
-    cout << "| ID |      Nome       | Nv | Mod | Inic | Tipo   |" << endl;
+    cout << "| ID     | Nome              | Nv | Inic | Tipo   |" << endl;
     cout << "+-------------------------------------------------+" << endl;
     
     No* atual = inicio;
     while (atual != nullptr) {
         Personagem p = atual->dados;
-        cout << "| " << setw(2) << p.id << " | ";
+        cout << "| " << setw(6) << left << p.id << " | ";
         cout << setw(15) << left << p.nome.substr(0, 15) << right << " | ";
         cout << setw(2) << p.nivel << " | ";
-        cout << setw(3) << showpos << p.modificador << noshowpos << " | ";
         cout << setw(4) << p.iniciativaAtual << " | ";
         cout << setw(6) << (p.isPlayer ? "Player" : "NPC") << " |" << endl;
         atual = atual->proximo;

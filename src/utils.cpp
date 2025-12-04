@@ -46,11 +46,11 @@ void rolarIniciativaPersonagem(Personagem* p) {
     
     int resultadoDado = rolarDado(p->dadoBase);//rola o dado do personagem
     
-    p->iniciativaAtual = calcularIniciativa(resultadoDado, p->modificador);//calcula iniciativa final
+    p->iniciativaAtual = calcularIniciativa(resultadoDado, p->nivel);//calcula iniciativa final
 }
 
-int calcularIniciativa(int resultadoDado, int modificador) {
-    int resultado = resultadoDado + modificador;
+int calcularIniciativa(int resultadoDado, int nivel) {
+    int resultado = resultadoDado + nivel;
     
     if (resultado < 1) {
         resultado = 1;//iniciativa minima eh 1

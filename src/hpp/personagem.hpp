@@ -15,7 +15,6 @@ struct Personagem {
     string nome;            //Nome do personagem
     int nivel;              //Nivel (1-20)
     int dadoBase;           //Tipo de dado (ex: 20 para d20)
-    int modificador;        //Bonus de iniciativa (dotes/atributos)
     int iniciativaAtual;    //Resultado da rolagem + modificador
     bool isPlayer;          //true = jogador, false = NPC
 };

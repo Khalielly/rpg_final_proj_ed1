@@ -21,11 +21,6 @@ private:
     No* fim;
     int tamanho;
     
-    // ### Funcoes para QuickSort ###
-    
-    
-    // ### Funcoes para MergeSort ###
-    
 
 public:
     //construtor e destrutor
