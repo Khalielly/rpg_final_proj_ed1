@@ -63,7 +63,8 @@ void ExibirMenuDeCombate()
 
 void AddPersonagem(Lista *lista, int *proximoID)
 {
-    if (!lista || !proximoID) return;
+    if (!lista || !proximoID)
+        return;
 
     Personagem p;
     p.id = (*proximoID)++;
@@ -129,14 +130,16 @@ void RemoverPersonagem(Lista *lista)
         cout << "Personagem com ID " << id << " nao encontrado!" << endl;
 }
 
-
 // Funcoes para QuickSort
-No* particao(No* low, No* high){
+No *particao(No *low, No *high)
+{
     Personagem pivot = high->dados;
-    No* i = low->anterior;
+    No *i = low->anterior;
 
-    for (No* j = low; j != high; j = j->proximo){
-        if (j->dados.iniciativaAtual >= pivot.iniciativaAtual){
+    for (No *j = low; j != high; j = j->proximo)
+    {
+        if (j->dados.iniciativaAtual >= pivot.iniciativaAtual)
+        {
             i = (i == nullptr) ? low : i->proximo;
             std::swap(i->dados, j->dados);
         }
@@ -146,54 +149,68 @@ No* particao(No* low, No* high){
     swap(i->dados, high->dados);
 
     return i;
-
 }
 
-void quickSort(No* low, No* high){
-    if (high != nullptr && low != high && low != high->proximo){
-        No* p = particao(low, high);
+void quickSort(No *low, No *high)
+{
+    if (high != nullptr && low != high && low != high->proximo)
+    {
+        No *p = particao(low, high);
         quickSort(low, p->anterior);
         quickSort(p->proximo, high);
     }
 }
 
-//Funcoes para mergeSort
-No* split(No* head){
-    No* fast = head;
-    No* slow = head;
+// Funcoes para mergeSort
+No *split(No *head)
+{
+    No *fast = head;
+    No *slow = head;
 
-    while (fast->proximo && fast->proximo->proximo){
+    while (fast->proximo && fast->proximo->proximo)
+    {
         fast = fast->proximo;
         slow = slow->proximo;
     }
 
-    No* temp = slow->proximo;
+    No *temp = slow->proximo;
     slow->proximo = nullptr;
-    if (temp) temp->anterior = nullptr;
+    if (temp)
+        temp->anterior = nullptr;
     return temp;
 }
 
-No* merge(No* primeiro, No* segundo){
-    if (!primeiro) return segundo;
-    if (!segundo) return primeiro;
+No *merge(No *primeiro, No *segundo)
+{
+    if (!primeiro)
+        return segundo;
+    if (!segundo)
+        return primeiro;
 
-    if (primeiro->dados.iniciativaAtual >= segundo->dados.iniciativaAtual){
+    if (primeiro->dados.iniciativaAtual >= segundo->dados.iniciativaAtual)
+    {
         primeiro->proximo = merge(primeiro->proximo, segundo);
-        if (primeiro->proximo) primeiro->proximo->anterior = primeiro;
+        if (primeiro->proximo)
+            primeiro->proximo->anterior = primeiro;
         primeiro->anterior = nullptr;
         return primeiro;
-    } else {
+    }
+    else
+    {
         segundo->proximo = merge(primeiro, segundo->proximo);
-        if (segundo->proximo) segundo->proximo->anterior = segundo;
+        if (segundo->proximo)
+            segundo->proximo->anterior = segundo;
         segundo->anterior = nullptr;
         return segundo;
     }
 }
 
-No* mergeSort(No* topo){
-    if (!topo || !topo->proximo) return topo;
+No *mergeSort(No *topo)
+{
+    if (!topo || !topo->proximo)
+        return topo;
 
-    No* segundo = split(topo);
+    No *segundo = split(topo);
 
     topo = mergeSort(topo);
     segundo = mergeSort(segundo);
@@ -202,29 +219,32 @@ No* mergeSort(No* topo){
 }
 
 // Iniciar combate
-void IniciarCombate(Lista* lista, int* proximoID)
+void IniciarCombate(Lista *lista, int *proximoID)
 {
-    
+
     if (!lista || lista->estaVazia())
     {
         cout << "Nenhum personagem na lista para iniciar o combate!" << endl;
         return;
     }
-    
+
     cout << "Iniciando combate..." << endl;
-    
+
     bool fim = false;
 
-    while (!fim){
+    while (!fim)
+    {
 
         rolarIniciativaTodos(lista);
 
-        if(Metodo_Ordenacao == "QuickSort"){
+        if (Metodo_Ordenacao == "QuickSort")
+        {
             cout << "Metodo de ordenacao selecionado: QuickSort" << endl;
             quickSort(lista->getInicio(), lista->getFim());
         }
 
-        if(Metodo_Ordenacao == "MergeSort"){
+        if (Metodo_Ordenacao == "MergeSort")
+        {
             cout << "Metodo de ordenacao selecionado: MergeSort" << endl;
             mergeSort(lista->getInicio());
         }
@@ -232,8 +252,9 @@ void IniciarCombate(Lista* lista, int* proximoID)
         lista->exibirOrdemCombate();
 
         char acao = ' ';
-        
-        do{
+
+        do
+        {
             ExibirMenuDeCombate();
             cin >> acao;
             LimparInputBuffer();
@@ -242,16 +263,18 @@ void IniciarCombate(Lista* lista, int* proximoID)
             case 'P':
                 continue;
                 break;
-            
+
             case 'R':
-                if (lista->estaVazia()){
+                if (lista->estaVazia())
+                {
                     cout << "Nenhum personagem para remover!" << endl;
                     break;
                 }
                 {
-                    No* atual = lista->getInicio();
+                    No *atual = lista->getInicio();
                     Personagem p = atual->dados;
-                    if (lista->remover(p.id)){
+                    if (lista->remover(p.id))
+                    {
                         cout << "Personagem " << p.nome << " removido com sucesso!" << endl;
                     }
                 }
@@ -271,9 +294,8 @@ void IniciarCombate(Lista* lista, int* proximoID)
                 break;
             }
 
-        }while(acao != ' ');
+        } while (acao != ' ');
     }
-
 }
 
 int main()
@@ -292,10 +314,27 @@ int main()
         cin >> opcao;
         LimparInputBuffer();
 
+        if (Dado_Final == 0 && opcao != 0 && opcao != 1)
+        {
+            cout << "Voce precisa escolher o tipo de dado primeiro! (Opcao 1)" << endl;
+            Pausar();
+            continue;
+        }
+
         switch (opcao)
         {
         case 1:
-            cout << "Definir tipo de dado ainda nao implementado." << endl;
+            cout << "Escolha o tipo de dado base (d4, d6, d8, d10, d12, d20): ";
+            cin >> Dado_Final;
+
+            while (Dado_Final != 4 && Dado_Final != 6 && Dado_Final != 8 &&
+                   Dado_Final != 10 && Dado_Final != 12 && Dado_Final != 20)
+            {
+                cout << "Valor invalido! Escolha entre 4, 6, 8, 10, 12 ou 20: ";
+                cin >> Dado_Final;
+            }
+
+            cout << "Dado definido como d" << Dado_Final << endl;
             Pausar();
             break;
 
