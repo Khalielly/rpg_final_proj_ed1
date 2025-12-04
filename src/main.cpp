@@ -223,6 +223,8 @@ void IniciarCombate(Lista *lista, int *proximoID)
 
     cout << "Iniciando combate..." << endl;
 
+    rolarIniciativaTodos(lista);
+
     if(Metodo_Ordenacao == "QuickSort"){
         cout << "Metodo de ordenacao selecionado: QuickSort" << endl;
         quickSort(lista->getInicio(), lista->getFim());
@@ -231,71 +233,78 @@ void IniciarCombate(Lista *lista, int *proximoID)
         lista->ordenarMerge();
     }
 
-    bool fim = false;
+    bool combateAtv = true;
 
-    while (!fim)
+    while (combateAtv)
     {
 
-        rolarIniciativaTodos(lista);
-
-        if (Metodo_Ordenacao == "QuickSort")
-        {
-            cout << "Metodo de ordenacao selecionado: QuickSort" << endl;
-            quickSort(lista->getInicio(), lista->getFim());
-        }
-
-        if (Metodo_Ordenacao == "MergeSort")
-        {
-            cout << "Metodo de ordenacao selecionado: MergeSort" << endl;
-            mergeSort(lista->getInicio());
+        if (lista->estaVazia()){
+            cout << "Todos os personagens foram removidos. Combate encerrado." << endl;
+            break;
         }
 
         lista->exibirOrdemCombate();
 
-        char acao = ' ';
+        char acao;
+        ExibirMenuDeCombate();
+        cin >> acao;
+        LimparInputBuffer();
 
-        do
-        {
-            ExibirMenuDeCombate();
-            cin >> acao;
-            LimparInputBuffer();
-            switch (acao)
+        switch (acao){
+        case 'P':
+        case 'p':
+            cout << "\n--- Proximo Turno ---" << endl;
             {
-            case 'P':
-                continue;
-                break;
-
-            case 'R':
-                if (lista->estaVazia())
-                {
-                    cout << "Nenhum personagem para remover!" << endl;
-                    break;
+                No *primeiro = lista->getInicio();
+                if (primeiro == nullptr) {
+                    Personagem p = primeiro->dados;
+                    lista->remover(p.id);
+                    lista->inFim(p);
                 }
-                {
-                    No *atual = lista->getInicio();
-                    Personagem p = atual->dados;
-                    if (lista->remover(p.id))
-                    {
-                        cout << "Personagem " << p.nome << " removido com sucesso!" << endl;
-                    }
-                }
-                break;
-            case 'A':
-                AddPersonagem(lista, proximoID);
-                break;
-            case 'L':
-                lista->exibir();
-                break;
-            case 'S':
-                cout << "Saindo do combate..." << endl;
-                fim = true;
-                break;
-            default:
-                cout << "Acao invalida! Tente novamente." << endl;
+            }
+            break;
+        case 'R':
+        case 'r':
+            if (lista->estaVazia())
+            {
+                cout << "Nenhum personagem para remover!" << endl;
                 break;
             }
+            {
+                No *atual = lista->getInicio();
+                Personagem p = atual->dados;
+                if (lista->remover(p.id))
+                {
+                    cout << "Personagem " << p.nome << " removido com sucesso!" << endl;
+                }
+            }
+            break;
+        case 'A':
+        case 'a':
+            AddPersonagem(lista, proximoID);
 
-        } while (acao != ' ');
+            rolarIniciativaPersonagem(&(lista->getFim()->dados));
+
+            if(Metodo_Ordenacao == "QuickSort"){
+                lista->ordenarQS();
+            }else if(Metodo_Ordenacao == "MergeSort"){
+                lista->ordenarMerge();
+            }
+            break;
+        case 'L':
+        case 'l':
+            lista->exibir();
+            Pausar();
+            break;
+        case 'S':
+        case 's':
+            cout << "Saindo do combate..." << endl;
+            combateAtv = false;
+            break;
+        default:
+            cout << "Acao invalida! Tente novamente." << endl;
+            break;
+        }       
     }
 }
 
