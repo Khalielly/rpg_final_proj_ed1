@@ -21,6 +21,7 @@ private:
     No* fim;
     int tamanho;
     
+    void atualizarPrtrs();
 
 public:
     //construtor e destrutor
@@ -42,6 +43,10 @@ public:
     bool estaVazia();
     No* getInicio();
     No* getFim();
+
+    //ordenacao
+    void ordenarQS();
+    void ordenarMerge();
 };
 
 #endif
