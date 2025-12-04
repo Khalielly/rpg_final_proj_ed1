@@ -223,6 +223,14 @@ void IniciarCombate(Lista *lista, int *proximoID)
 
     cout << "Iniciando combate..." << endl;
 
+    if(Metodo_Ordenacao == "QuickSort"){
+        cout << "Metodo de ordenacao selecionado: QuickSort" << endl;
+        quickSort(lista->getInicio(), lista->getFim());
+    } else if(Metodo_Ordenacao == "MergeSort"){
+        cout << "Metodo de ordenacao selecionado: MergeSort" << endl;
+        lista->ordenarMerge();
+    }
+
     bool fim = false;
 
     while (!fim)
@@ -379,6 +387,10 @@ int main()
                     it = it->proximo;
                 }
             }
+
+            lista.ordenarQS();
+            cout << "\nLista ordenada (apos QuickSort):" << endl;
+
             Pausar();
             break;
 
@@ -395,6 +407,10 @@ int main()
                     it = it->proximo;
                 }
             }
+
+            lista.ordenarMerge();
+            cout << "\nLista ordenada (apos MergeSort):" << endl;
+
             Pausar();
             break;
 
