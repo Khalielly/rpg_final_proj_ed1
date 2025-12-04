@@ -20,4 +20,6 @@ void rolarIniciativaPersonagem(Personagem* p);
 
 void rolarIniciativaTodos(Lista* lista);
 
+int validarNivel(int nivel);
+
 #endif

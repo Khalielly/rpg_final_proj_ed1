@@ -75,16 +75,20 @@ void AddPersonagem(Lista *lista, int *proximoID)
     if (p.nome.empty())
     {
         cout << "Nome invalido!" << endl;
+        (*proximoID)--;
         return;
     }
 
     cout << "Nivel (1-20): ";
     cin >> p.nivel;
-    while (p.nivel < 1 || p.nivel > 20)
+
+    p.nivel = validarNivel(p.nivel);
+
+    if (p.nivel != p.nivel)
     {
-        cout << "Nivel invalido! Insira um valor entre 1 e 20: ";
-        cin >> p.nivel;
+        cout << "Nivel ajustado para: " << p.nivel << endl;
     }
+
     p.dadoBase = Dado_Final;
 
     char tipo;
