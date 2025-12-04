@@ -132,6 +132,47 @@ No* Lista::buscar(int id) {
     return nullptr;//nao encontrou
 }
 
+//ordenacao
+void Lista::atualizarPrtrs() {
+    if(estaVazia()) {
+        inicio = nullptr;
+        fim = nullptr;
+        return;
+    }
+
+    inicio->anterior = nullptr;
+
+    No* atual = inicio;
+    while (atual->proximo != nullptr){
+        atual = atual->proximo;
+    }
+
+    fim = atual;
+    fim->proximo = nullptr;
+    
+}
+
+void Lista::ordenarQS(){
+    if(estaVazia() || tamanho == 1) {
+        return;
+    }
+
+    extern void quickSort(No* low, No* high);
+
+    quickSort(inicio, fim);
+    atualizarPrtrs();
+}
+
+void Lista::ordenarMerge(){
+    if(estaVazia() || tamanho == 1) {
+        return;
+    }
+
+    extern No* mergeSort(No* topo);
+
+    inicio = mergeSort(inicio);
+    atualizarPrtrs();
+}
 
 //exibicao
 void Lista::exibir() {
