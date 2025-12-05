@@ -25,7 +25,7 @@ void ExibirMenu()
 {
     cout << endl;
     cout << "╔══════════════════════════════════════╗" << endl;
-    cout << "║               RPG v1.0               ║" << endl;
+    cout << "║            RPG v1.0                  ║" << endl;
     cout << "║      Estrutura de Dados I - UFG      ║" << endl;
     cout << "╚══════════════════════════════════════╝" << endl;
     cout << endl;
@@ -45,6 +45,7 @@ void MenuPrincipal()
     cout << " 8. Iniciar combate" << endl;
     cout << " 0. Sair" << endl;
     cout << "========================================" << endl;
+    cout << " Metodo de ordenacao atual: " << Metodo_Ordenacao << endl;
     cout << " Escolha uma opcao: ";
 }
 
@@ -52,12 +53,13 @@ void ExibirMenuDeCombate()
 {
     cout << endl;
     cout << "============== MENU DE COMBATE ==============" << endl;
-    cout << " P - Proximo turno" << endl;
-    cout << " R - Remover personagem atual" << endl;
-    cout << " A - Adicionar novo personagem" << endl;
+    cout << " P - Proximo turno (Rola e Reordena TUDO)" << endl;
+    cout << " R - Remover personagem por ID" << endl;
+    cout << " A - Adicionar novo personagem (e Reordena)" << endl;
     cout << " L - Listar todos os personagens" << endl;
     cout << " S - Sair do combate" << endl;
     cout << "----------------------------------------" << endl;
+    cout << " Metodo de ordenacao: " << Metodo_Ordenacao << endl;
     cout << " Acao: ";
 }
 
@@ -83,12 +85,9 @@ void AddPersonagem(Lista *lista, int *proximoID)
     cout << "Nivel (1-20): ";
     cin >> nivelInput;
 
-    p.nivel = validarNivel(nivelInput);
-
-    if (nivelInput != p.nivel)
-    {
-        cout << "Nivel ajustado para: " << p.nivel << endl;
-    }
+    p.nivel = nivelInput;
+    if (p.nivel < 1) p.nivel = 1;
+    if (p.nivel > 20) p.nivel = 20;
 
     p.dadoBase = Dado_Final;
 
@@ -128,100 +127,6 @@ void RemoverPersonagem(Lista *lista)
         cout << "Personagem com ID " << id << " nao encontrado!" << endl;
 }
 
-// Funcoes para QuickSort
-No *particao(No *low, No *high)
-{
-    Personagem pivot = high->dados;
-    No *i = low->anterior;
-
-    for (No *j = low; j != high; j = j->proximo)
-    {
-        if (j->dados.iniciativaAtual >= pivot.iniciativaAtual)
-        {
-            i = (i == nullptr) ? low : i->proximo;
-            std::swap(i->dados, j->dados);
-        }
-    }
-
-    i = (i == nullptr) ? low : i->proximo;
-    swap(i->dados, high->dados);
-
-    return i;
-}
-
-void quickSort(No *low, No *high)
-{
-    if (high != nullptr && low != high && low != high->proximo)
-    {
-        No *p = particao(low, high);
-        quickSort(low, p->anterior);
-        quickSort(p->proximo, high);
-    }
-}
-
-// Funcoes para mergeSort
-No *split(No *head)
-{
-    No *fast = head;
-    No *slow = head;
-
-    while (fast->proximo && fast->proximo->proximo)
-    {
-        fast = fast->proximo;
-        slow = slow->proximo;
-    }
-
-    No *temp = slow->proximo;
-    slow->proximo = nullptr;
-    if (temp)
-        temp->anterior = nullptr;
-    return temp;
-}
-
-No *merge(No *primeiro, No *segundo)
-{
-    if (!primeiro)
-        return segundo;
-    if (!segundo)
-        return primeiro;
-
-    No *resultado = nullptr;
-    
-    if (primeiro->dados.iniciativaAtual >= segundo->dados.iniciativaAtual)
-    {
-        resultado = primeiro;
-        resultado->proximo = merge(primeiro->proximo, segundo);
-
-        if (resultado->proximo)
-            resultado->proximo->anterior = resultado;
-        resultado->anterior = nullptr;
-        return primeiro;
-    }
-    else
-    {
-        resultado = segundo;
-        resultado->proximo = merge(primeiro, segundo->proximo);
-        if (resultado->proximo)
-            resultado->proximo->anterior = resultado;
-        segundo->anterior = nullptr;
-        return segundo;
-    }
-}
-
-No *mergeSort(No *topo)
-{
-    if (!topo || !topo->proximo)
-        return topo;
-
-    No *segundo = split(topo);
-
-    topo = mergeSort(topo);
-    segundo = mergeSort(segundo);
-
-    return merge(topo, segundo);
-}
-
-// Iniciar combate
 void IniciarCombate(Lista *lista, int *proximoID)
 {
 
@@ -230,16 +135,20 @@ void IniciarCombate(Lista *lista, int *proximoID)
         cout << "Nenhum personagem na lista para iniciar o combate!" << endl;
         return;
     }
+    
+    if (Metodo_Ordenacao == "Nenhum")
+    {
+        cout << "Metodo de ordenacao nao selecionado. Usando QuickSort por padrao." << endl;
+        Metodo_Ordenacao = "QuickSort";
+    }
 
-    cout << "Iniciando combate..." << endl;
+    cout << "Iniciando combate com " << Metodo_Ordenacao << "..." << endl;
 
     rolarIniciativaTodos(lista);
-
+    
     if(Metodo_Ordenacao == "QuickSort"){
-        cout << "Metodo de ordenacao selecionado: QuickSort" << endl;
-        quickSort(lista->getInicio(), lista->getFim());
+        lista->ordenarQS();
     } else if(Metodo_Ordenacao == "MergeSort"){
-        cout << "Metodo de ordenacao selecionado: MergeSort" << endl;
         lista->ordenarMerge();
     }
 
@@ -263,14 +172,36 @@ void IniciarCombate(Lista *lista, int *proximoID)
         switch (acao){
         case 'P':
         case 'p':
-            cout << "\n--- Proximo Turno ---" << endl;
+            cout << "\n--- Proximo Turno: Reordenando Iniciativa ---" << endl;
             {
                 No *primeiro = lista->getInicio();
                 if (primeiro != nullptr) {
                     Personagem p = primeiro->dados;
-                    lista->remover(p.id);
-                    lista->inFim(p);
+                    
+                    cout << "Personagem " << p.nome << " jogou. Iniciativa antiga: " << p.iniciativaAtual << endl;
+                    
+                    lista->remover(p.id); 
+                    
+                    rolarIniciativaTodos(lista);
+                    
+                    rolarIniciativaPersonagem(&p);
+                    
+                    lista->inFim(p); 
+                    
+                    cout << "Nova iniciativa de " << p.nome << ": " << p.iniciativaAtual << endl;
                 }
+                
+                cout << "Iniciativas de todos os personagens atualizadas." << endl;
+
+                if(Metodo_Ordenacao == "QuickSort"){
+                    cout << "Aplicando QuickSort..." << endl;
+                    lista->ordenarQS();
+                } else {
+                    cout << "Aplicando MergeSort..." << endl;
+                    lista->ordenarMerge();
+                }
+                
+                Pausar();
             }
             break;
         case 'R':
@@ -280,27 +211,26 @@ void IniciarCombate(Lista *lista, int *proximoID)
                 cout << "Nenhum personagem para remover!" << endl;
                 break;
             }
-            {
-                No *atual = lista->getInicio();
-                Personagem p = atual->dados;
-                if (lista->remover(p.id))
-                {
-                    cout << "Personagem " << p.nome << " removido com sucesso!" << endl;
-                }
-            }
+            // Chama a função global para remoção por ID
+            RemoverPersonagem(lista);
+            Pausar();
             break;
-        case 'A':
+          case 'A':
         case 'a':
             AddPersonagem(lista, proximoID);
-
-            rolarIniciativaPersonagem(&(lista->getFim()->dados));
-
-            if(Metodo_Ordenacao == "QuickSort"){
-                lista->ordenarQS();
-            }else if(Metodo_Ordenacao == "MergeSort"){
+            
+            rolarIniciativaTodos(lista);
+            
+            if(Metodo_Ordenacao == "MergeSort"){
+                cout << "Reordenando com MergeSort..." << endl;
                 lista->ordenarMerge();
+            } else {
+                cout << "Reordenando com QuickSort..." << endl;
+                lista->ordenarQS();
             }
+            Pausar();
             break;
+
         case 'L':
         case 'l':
             lista->exibir();
@@ -320,7 +250,7 @@ void IniciarCombate(Lista *lista, int *proximoID)
 
 int main()
 {
-    inicializarRNG();
+    // inicializarRNG(); 
 
     Lista lista;
     int proximoID = 1;
@@ -383,7 +313,7 @@ int main()
                 while (it != nullptr)
                 {
                     cout << it->dados.nome << ": " << it->dados.iniciativaAtual
-                         << " (d" << Dado_Final << " + nivel " << it->dados.nivel << ")\n";
+                              << " (d" << Dado_Final << " + nivel " << it->dados.nivel << ")\n";
                     it = it->proximo;
                 }
             }
@@ -394,41 +324,29 @@ int main()
             break;
 
         case 6:
-            cout << "Ordenar lista (QuickSort) selecionado." << endl;
+            cout << "Ordenar lista (QuickSort) selecionado. Lista sera ordenada apos rolar iniciativa ou ao iniciar combate." << endl;
             Metodo_Ordenacao = "QuickSort";
 
-            cout << "\nLista atual (antes da ordenacao):\n";
-            {
-                No *it = lista.getInicio();
-                while (it != nullptr)
-                {
-                    cout << it->dados.nome << " - iniciativa: " << it->dados.iniciativaAtual << endl;
-                    it = it->proximo;
-                }
+            if (!lista.estaVazia()) {
+                rolarIniciativaTodos(&lista);
+                lista.ordenarQS();
+                cout << "\nLista ordenada (apos QuickSort):" << endl;
+                lista.exibirOrdemCombate();
             }
-
-            lista.ordenarQS();
-            cout << "\nLista ordenada (apos QuickSort):" << endl;
 
             Pausar();
             break;
 
         case 7:
-            cout << "Ordenar lista (MergeSort) selecionado." << endl;
+            cout << "Ordenar lista (MergeSort) selecionado. Lista sera ordenada apos rolar iniciativa ou ao iniciar combate." << endl;
             Metodo_Ordenacao = "MergeSort";
 
-            cout << "\nLista atual (antes da ordenacao):\n";
-            {
-                No *it = lista.getInicio();
-                while (it != nullptr)
-                {
-                    cout << it->dados.nome << " - iniciativa: " << it->dados.iniciativaAtual << endl;
-                    it = it->proximo;
-                }
+            if (!lista.estaVazia()) {
+                rolarIniciativaTodos(&lista);
+                lista.ordenarMerge();
+                cout << "\nLista ordenada (apos MergeSort):" << endl;
+                lista.exibirOrdemCombate();
             }
-
-            lista.ordenarMerge();
-            cout << "\nLista ordenada (apos MergeSort):" << endl;
 
             Pausar();
             break;
