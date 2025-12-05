@@ -174,6 +174,9 @@ void IniciarCombate(Lista *lista, int *proximoID)
         lista->ordenarMerge();
     }
 
+    int rodadaAtual = 1;
+    int turnosTotal = 0;
+
     bool combateAtv = true;
 
     while (combateAtv)
@@ -194,36 +197,39 @@ void IniciarCombate(Lista *lista, int *proximoID)
         switch (acao){
         case 'P':
         case 'p':
-            cout << "\n--- Proximo Turno: Reordenando Iniciativa ---" << endl;
+            cout << "\n--- Processando Proximo Turno ---" << endl;
             {
                 No *primeiro = lista->getInicio();
                 if (primeiro != nullptr) {
                     Personagem p = primeiro->dados;
-                    
-                    cout << "Personagem " << p.nome << " jogou. Iniciativa antiga: " << p.iniciativaAtual << endl;
-                    
-                    lista->remover(p.id); 
-                    
-                    rolarIniciativaTodos(lista);
-                    
-                    rolarIniciativaPersonagem(&p);
-                    
-                    lista->inFim(p); 
-                    
-                    cout << "Nova iniciativa de " << p.nome << ": " << p.iniciativaAtual << endl;
-                }
-                
-                cout << "Iniciativas de todos os personagens atualizadas." << endl;
 
-                if(Metodo_Ordenacao == "QuickSort"){
-                    cout << "Aplicando QuickSort..." << endl;
-                    lista->ordenarQS();
-                } else {
-                    cout << "Aplicando MergeSort..." << endl;
-                    lista->ordenarMerge();
+                    lista->remover(p.id);
+                    lista->inFim(p);
+
+                    cout << "Turno de " << p.nome << " encerrado." << endl;
+
+                    turnosTotal++;
+
+                    if (turnosTotal >= lista->getTamanho()) {
+                        
+                        cout << "\n>>> FIM DA RODADA " << rodadaAtual << " <<<" << endl;
+                        cout << ">>> Rerolando Iniciativas para a proxima rodada... <<<" << endl;
+
+                        rolarIniciativaTodos(lista);
+                        
+                        if(Metodo_Ordenacao == "QuickSort"){
+                            lista->ordenarQS();
+                        } else {
+                            lista->ordenarMerge(); 
+                        }
+
+                        rodadaAtual++;
+                        turnosTotal = 0;
+                        
+                        cout << ">>> INICIANDO RODADA " << rodadaAtual << " (Nova Ordem Definida) <<<" << endl;
+                        Pausar();
+                    }
                 }
-                
-                Pausar();
             }
             break;
         case 'R':
