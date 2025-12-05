@@ -6,6 +6,7 @@ Implementacao da lista duplamente encadeada
 #include "hpp/lista.hpp"
 #include <iostream>
 #include <iomanip>
+#include <algorithm> 
 
 using namespace std;
 
@@ -102,11 +103,11 @@ bool Lista::remover(int id) {
     }
     else if (alvo == inicio) {
         inicio = alvo->proximo;
-        inicio->anterior = nullptr;
+        if(inicio != nullptr) inicio->anterior = nullptr;
     }
     else if (alvo == fim) {
         fim = alvo->anterior;
-        fim->proximo = nullptr;
+        if(fim != nullptr) fim->proximo = nullptr;
     }
     else {
         alvo->anterior->proximo = alvo->proximo;
@@ -157,8 +158,6 @@ void Lista::ordenarQS(){
         return;
     }
 
-    extern void quickSort(No* low, No* high);
-
     quickSort(inicio, fim);
     atualizarPrtrs();
 }
@@ -168,11 +167,82 @@ void Lista::ordenarMerge(){
         return;
     }
 
-    extern No* mergeSort(No* topo);
-
     inicio = mergeSort(inicio);
     atualizarPrtrs();
 }
+
+// Funcoes auxiliares para QuickSort
+No* Lista::particao(No* low, No* high) { 
+    Personagem pivot = high->dados;
+    No* i = low->anterior;
+
+    for (No* j = low; j != high; j = j->proximo) {
+        if (j->dados.iniciativaAtual >= pivot.iniciativaAtual) {
+            i = (i == nullptr) ? low : i->proximo;
+            std::swap(i->dados, j->dados); // Usando std::swap
+        }
+    }
+    i = (i == nullptr) ? low : i->proximo;
+    
+    std::swap(i->dados, high->dados); // Usando std::swap
+
+    return i;
+}
+
+void Lista::quickSort(No* low, No* high) { 
+    if (high != nullptr && low != high && low != high->proximo) {
+        No* p = particao(low, high);
+        quickSort(low, p->anterior);
+        quickSort(p->proximo, high);
+    }
+}
+
+// Funcoes auxiliares para MergeSort
+No* Lista::split(No* head) { 
+    No* fast = head;
+    No* slow = head;
+
+    while (fast->proximo && fast->proximo->proximo) {
+        fast = fast->proximo;
+        slow = slow->proximo;
+    }
+
+    No* temp = slow->proximo;
+    slow->proximo = nullptr;
+    if (temp) temp->anterior = nullptr;
+    return temp;
+}
+
+No* Lista::merge(No* primeiro, No* segundo) { 
+    if (!primeiro) return segundo;
+    if (!segundo) return primeiro;
+
+    No* resultado = nullptr;
+    
+    // Critério de ordenação: maior iniciativaAtual primeiro (>=)
+    if (primeiro->dados.iniciativaAtual >= segundo->dados.iniciativaAtual) {
+        resultado = primeiro;
+        resultado->proximo = merge(primeiro->proximo, segundo);
+        if (resultado->proximo) resultado->proximo->anterior = resultado;
+        resultado->anterior = nullptr;
+        return primeiro;
+    } else {
+        resultado = segundo;
+        resultado->proximo = merge(primeiro, segundo->proximo);
+        if (resultado->proximo) resultado->proximo->anterior = resultado;
+        segundo->anterior = nullptr;
+        return segundo;
+    }
+}
+
+No* Lista::mergeSort(No* topo) { 
+    if (!topo || !topo->proximo) return topo;
+    No* segundo = split(topo);
+    topo = mergeSort(topo);
+    segundo = mergeSort(segundo);
+    return merge(topo, segundo);
+}
+
 
 //exibicao
 void Lista::exibir() {

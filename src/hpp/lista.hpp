@@ -23,6 +23,12 @@ private:
     
     void atualizarPrtrs();
 
+    No* particao(No* low, No* high);
+    void quickSort(No* low, No* high);
+    No* split(No* head);
+    No* merge(No* primeiro, No* segundo);
+    No* mergeSort(No* topo);
+
 public:
     //construtor e destrutor
     Lista();
